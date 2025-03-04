@@ -1,6 +1,6 @@
-# 9soat-g12-mc-king
+# 9soat-g63-mc-king
 
-Tech Challenge FIAP - 9SOAT - Grupo 12
+Tech Challenge FIAP - 9SOAT - Grupo 63
 
   
 

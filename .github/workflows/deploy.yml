@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Deploy to AWS
 
 on:
   push:
@@ -18,16 +18,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
       with:
-        node-version: '14'
+        dotnet-version: '8.0.x'
 
     - name: Install dependencies
-      run: npm install
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
 
     - name: Run tests
-      run: npm test
+      run: dotnet test --no-restore --verbosity normal
 
   deploy:
     runs-on: ubuntu-latest
@@ -37,18 +40,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
       with:
-        node-version: '14'
+        dotnet-version: '8.0.x'
 
-    - name: Install dependencies
-      run: npm install
+    - name: Publish
+      run: dotnet publish -c Release -o publish
 
-    - name: Build project
-      run: npm run build
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
-    - name: Deploy to Cloud
-      run: |
-        # Comandos para fazer o deploy na sua conta da nuvem
-        # Exemplo: aws s3 sync ./build s3://seu-bucket --delete
+    - name: Deploy to S3
+      run: aws s3 sync ./publish s3://seu-bucket --delete

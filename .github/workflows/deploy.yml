@@ -63,7 +63,7 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore 9soat-g63-mc-king.sln
 
     - name: Build with .NET
       run: dotnet build --configuration Release --no-restore 9soat-g63-mc-king.sln

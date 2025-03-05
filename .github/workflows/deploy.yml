@@ -1,22 +1,61 @@
-name: Deploy to AWS
+name: pipeline
 
 on:
   push:
-    branches:
-      - main
-      - master
-  pull_request:
-    branches:
-      - main
-      - master
 
 jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Install dependencies for CasosDeUsos.Tests
+      working-directory: CasosDeUsos.Tests
+      run: dotnet restore
+
+    - name: Run tests for CasosDeUsos.Tests
+      working-directory: CasosDeUsos.Tests
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: Install dependencies for Entidades.Tests
+      working-directory: Entidades.Tests
+      run: dotnet restore
+
+    - name: Run tests for Entidades.Tests
+      working-directory: Entidades.Tests
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: Install dependencies for InterfaceAdapters.Tests
+      working-directory: InterfaceAdapters.Tests
+      run: dotnet restore
+
+    - name: Run tests for InterfaceAdapters.Tests
+      working-directory: InterfaceAdapters.Tests
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: Install dependencies for Infra.Tests
+      working-directory: Infra.Tests
+      run: dotnet restore
+
+    - name: Run tests for Infra.Tests
+      working-directory: Infra.Tests
+      run: dotnet test --no-restore --verbosity normal
+
   build:
     runs-on: ubuntu-latest
-
+    needs: unit-test
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
@@ -24,36 +63,53 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore 9soat-g63-mc-king.sln
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Run tests
-      run: dotnet test --no-restore --verbosity normal
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '8.0.x'
+    - name: Build with .NET
+      run: dotnet build --configuration Release --no-restore 9soat-g63-mc-king.sln
 
     - name: Publish
-      run: dotnet publish -c Release -o publish
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
+      run: dotnet publish -c Release -o publish 9soat-g63-mc-king.sln
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4.4.0
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        name: publish
+        path: publish/
 
-    - name: Deploy to S3
-      run: aws s3 sync ./publish s3://seu-bucket --delete
+  deploy-STG:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: stg
+    
+    if: github.ref == 'refs/heads/develop'
+    steps:
+    - name: Deploy 
+      shell: bash
+      run: |
+        echo "Deploy STG"
+          
+  deploy-pre:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release'
+    environment:
+      name: pre
+    needs: build
+    steps:
+    - name: Deploy 
+      shell: bash
+      run: |
+        echo "Deploy PRE"
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: prod
+    needs: build
+    steps:
+    - name: Deploy 
+      shell: bash
+      run: |
+        echo "Deploy PROD"

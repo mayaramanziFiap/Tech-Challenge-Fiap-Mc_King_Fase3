@@ -226,7 +226,23 @@ jobs:
         with:
           name: publish
           path: publish/
-        
+
+      - name: Ensure `.runtimeconfig.json` Generation
+        run: |
+          echo "<PropertyGroup>
+          <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+          </PropertyGroup>" >> **/*.csproj
+
+      - name: Publish Application
+        run: dotnet publish -c Release -o publish
+
+      - name: Verify .runtimeconfig.json Presence
+        run: |
+          if [ ! -f publish/*.runtimeconfig.json ]; then
+            echo "Error: .runtimeconfig.json file not found in the publish directory."
+            exit 1
+          fi
+
       - name: Create Deployment Package
         run: zip -r application.zip publish/
 

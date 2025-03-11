@@ -101,7 +101,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: sonar-analysis
+    needs: unit-test
+    #needs: sonar-analysis
     steps:
     - uses: actions/checkout@v3
       with:
@@ -229,9 +230,9 @@ jobs:
 
       - name: Ensure `.runtimeconfig.json` Generation
         run: |
-          echo "<PropertyGroup>
+          find . -name "*.csproj" -exec sh -c 'echo "<PropertyGroup>
           <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-          </PropertyGroup>" >> **/*.csproj
+          </PropertyGroup>" >> {}' \;
 
       - name: Publish Application
         run: dotnet publish -c Release -o publish

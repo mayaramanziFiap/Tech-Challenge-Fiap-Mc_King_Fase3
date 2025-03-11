@@ -211,3 +211,31 @@ jobs:
       shell: bash
       run: |
         echo "Deploy PROD"
+
+deploy-aws:
+  needs: build  
+  name: Deploy-aws
+  runs-on: ubuntu-latest
+  if: github.ref == 'refs/heads/main'
+  environment:
+    name: AWS-PRO
+    url: http://devopsfiap-on-env1.us-east-1.elasticbeanstalk.com/
+  steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: publish
+        path: publish/
+
+    - name: Deploy to Elastic Beanstalk
+      uses: einaregilsson/beanstalk-deploy@v21
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: TechChallenge3
+        environment_name: e-d7ghzmpexr
+        region: us-east-1
+        version_label: ${{ github.SHA }}
+        deployment_package: ./publish
+        wait_for_environment_recovery: 90
+        use_existing_version_if_available: false

@@ -235,7 +235,7 @@ jobs:
           </PropertyGroup>" >> {}' \;
 
       - name: Publish Application
-        run: dotnet publish -c Release -o publish
+        run: dotnet publish -c Release -o publish 9soat-g63-mc-king.sln
 
       - name: Verify .runtimeconfig.json Presence
         run: |

@@ -227,7 +227,7 @@ jobs:
           name: publish
           path: publish/
         
-        name: Create Deployment Package
+      - name: Create Deployment Package
         run: zip -r application.zip publish/
 
       - name: Deploy to Elastic Beanstalk

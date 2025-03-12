@@ -101,8 +101,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: unit-test
-    #needs: sonar-analysis
+    needs: sonar-analysis
     steps:
     - uses: actions/checkout@v3
       with:
@@ -228,28 +227,6 @@ jobs:
           name: publish
           path: publish/
 
-      - name: Debug Current Directory
-        run: |
-          echo "Current directory: $(pwd)"
-          ls -la
-
-      - name: Locate Solution and Publish
-        run: |
-          SOLUTION=$(find . -name "9soat-g63-mc-king.sln" | head -n 1)
-          if [ -z "$SOLUTION" ]; then
-            echo "Error: Solution file not found!"
-            exit 1
-          fi
-          echo "Found solution: $SOLUTION"
-          dotnet publish "$SOLUTION" -c Release -o publish
-
-      - name: Verify .runtimeconfig.json Presence
-        run: |
-          if [ ! -f publish/*.runtimeconfig.json ]; then
-            echo "Error: .runtimeconfig.json file not found in the publish directory."
-            exit 1
-          fi
-
       - name: Create Deployment Package
         run: zip -r application.zip publish/
 
@@ -263,7 +240,7 @@ jobs:
           environment_name: TechChallenge3-env
           region: us-east-1
           version_label: ${{ github.SHA }}
-          deployment_package: ./application.zip
+          deployment_package: ../application.zip
           wait_for_environment_recovery: 90
           use_existing_version_if_available: false
 

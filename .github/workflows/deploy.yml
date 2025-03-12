@@ -226,9 +226,7 @@ jobs:
         with:
           name: publish
           path: publish/
-
-      - name: Create Deployment Package
-        run: zip -r application.zip publish/
+        
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -240,8 +238,6 @@ jobs:
           environment_name: TechChallenge3-env
           region: us-east-1
           version_label: ${{ github.SHA }}
-          deployment_package: ../application.zip
+          deployment_package: ./publish
           wait_for_environment_recovery: 90
           use_existing_version_if_available: false
-
-          

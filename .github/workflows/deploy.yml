@@ -23,11 +23,8 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore 9soat-g63-mc-king.sln
 
-      - name: Verificar Arquivos no Diretório
-        run: ls -la
-
       - name: Build the project
-        run: dotnet build --configuration Release -f 9soat-g63-mc-king.sln
+        run: dotnet build --configuration Release 9soat-g63-mc-king.sln
 
       - name: Publish the project
         run: dotnet publish --configuration Release -o ./publish 9soat-g63-mc-king.sln

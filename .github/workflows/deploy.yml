@@ -196,6 +196,24 @@ jobs:
       name: AWS-PRO
       url: http://devopsfiap-on-env1.us-east-1.elasticbeanstalk.com/
     steps:
+      - name: Criar Arquivo Dockerrun
+        run: |
+          echo '{
+            "AWSEBDockerrunVersion": "1",
+            "Image": {
+              "Name": "rm359734/teste_fase3:latest",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": "80"
+              },
+              {
+                "ContainerPort": "443"
+              }
+            ]
+          }' > Dockerrun.aws.json
+
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:

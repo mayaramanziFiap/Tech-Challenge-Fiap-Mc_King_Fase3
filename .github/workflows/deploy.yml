@@ -196,7 +196,7 @@ jobs:
       name: AWS-PRO
       url: http://devopsfiap-on-env1.us-east-1.elasticbeanstalk.com/
     steps:
-     - name: Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}

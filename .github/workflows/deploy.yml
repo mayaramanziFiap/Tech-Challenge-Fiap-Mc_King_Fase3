@@ -36,10 +36,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Verificar Arquivos
-        run: ls -la
+        run: ls -la ./API
 
       - name: Build da Imagem Docker
-        run: docker build -t rm359734/teste_fase3:${{ github.sha }} -f /API/Dockerfile .
+        run: docker build -t rm359734/teste_fase3:${{ github.sha }} -f ./API/Dockerfile .
         
 
       - name: Tag Imagem Docker

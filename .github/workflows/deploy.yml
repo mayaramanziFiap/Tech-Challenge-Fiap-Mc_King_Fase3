@@ -214,8 +214,6 @@ jobs:
       - name: Gerar ZIP para Deploy
         run: zip Dockerrun.zip Dockerrun.aws.json
 
-      - name: Verificar Arquivos no Diretório
-        run: ls -la
 
   deploy-aws:
     runs-on: ubuntu-latest

@@ -214,7 +214,6 @@ jobs:
       - name: Gerar ZIP para Deploy
         run: zip Dockerrun.zip Dockerrun.aws.json
 
-
   deploy-aws:
     runs-on: ubuntu-latest
     needs: generate-dockerrun

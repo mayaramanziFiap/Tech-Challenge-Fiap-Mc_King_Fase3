@@ -24,7 +24,7 @@ jobs:
         run: dotnet restore 9soat-g63-mc-king.sln
 
       - name: Build the project
-        run: dotnet build --configuration Release 9soat-g63-mc-king.sln
+        run: dotnet build --configuration Release -f 9soat-g63-mc-king.sln
 
       - name: Publish the project
         run: dotnet publish --configuration Release -o ./publish 9soat-g63-mc-king.sln
@@ -36,8 +36,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build da Imagem Docker
-        run: |
-          docker build -t rm359734/teste_fase3:${{ github.sha }} .
+        run: docker build -t rm359734/teste_fase3:${{ github.sha }} -f ../../Dockerfile .
+        
 
       - name: Tag Imagem Docker
         run: |
@@ -125,7 +125,7 @@ jobs:
     if: github.ref == 'refs/heads/release'
     environment:
       name: pre
-    needs: build-and-push-docker
+    needs: sonar-analysis
     steps:
       - name: Login no Docker Hub
         uses: docker/login-action@v2
@@ -170,7 +170,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: prod
-    needs: build-and-push-docker
+    needs: sonar-analysis
     steps:
       - name: Login no Docker Hub
         uses: docker/login-action@v2
@@ -188,6 +188,7 @@ jobs:
 
   deploy-aws:
     needs: build-and-push-docker
+    #needs: sonar-analysis
     name: Deploy-aws
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
